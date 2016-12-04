@@ -37,6 +37,9 @@
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.label2 = new System.Windows.Forms.Label();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.button4 = new System.Windows.Forms.Button();
@@ -86,22 +89,28 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(0, 52);
+            this.label1.Location = new System.Drawing.Point(4, 52);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(193, 13);
+            this.label1.Size = new System.Drawing.Size(131, 13);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Enter # of files to split into (default:100):";
+            this.label1.Text = "Enter # of files to split into:";
+            this.label1.Visible = false;
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(200, 49);
+            this.textBox1.Location = new System.Drawing.Point(141, 49);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(108, 20);
+            this.textBox1.Size = new System.Drawing.Size(160, 20);
             this.textBox1.TabIndex = 4;
+            this.textBox1.Text = "100";
+            this.textBox1.Visible = false;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox1_KeyPress);
             // 
             // backgroundWorker1
             // 
             this.backgroundWorker1.WorkerReportsProgress = true;
+            this.backgroundWorker1.WorkerSupportsCancellation = true;
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
@@ -124,6 +133,9 @@
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.tabPage1.Controls.Add(this.label2);
+            this.tabPage1.Controls.Add(this.radioButton2);
+            this.tabPage1.Controls.Add(this.radioButton1);
             this.tabPage1.Controls.Add(this.checkBox1);
             this.tabPage1.Controls.Add(this.label1);
             this.tabPage1.Controls.Add(this.button2);
@@ -136,15 +148,52 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Split";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 77);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(90, 13);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Select split mode:";
+            this.label2.Visible = false;
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(176, 75);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(61, 17);
+            this.radioButton2.TabIndex = 7;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = "FileSize";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioButton2.Visible = false;
+            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(101, 75);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(69, 17);
+            this.radioButton1.TabIndex = 6;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "FileCount";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.Visible = false;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(7, 69);
+            this.checkBox1.Location = new System.Drawing.Point(7, 98);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(110, 17);
             this.checkBox1.TabIndex = 5;
             this.checkBox1.Text = "BuildAutoJoiner(s)";
             this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.Visible = false;
             // 
             // tabPage2
             // 
@@ -184,6 +233,7 @@
             // backgroundWorker2
             // 
             this.backgroundWorker2.WorkerReportsProgress = true;
+            this.backgroundWorker2.WorkerSupportsCancellation = true;
             this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
             this.backgroundWorker2.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker2_ProgressChanged);
             this.backgroundWorker2.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker2_RunWorkerCompleted);
@@ -230,6 +280,9 @@
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton radioButton1;
     }
 }
 

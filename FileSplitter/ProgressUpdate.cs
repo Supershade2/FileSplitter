@@ -54,10 +54,21 @@ namespace FileSplitter
                 this.progressBar1.Maximum = value;
             }
         }
-
+        public bool cancel 
+        {
+            get 
+            {
+                return cancel;
+            }
+            private set 
+            {
+                cancel = value;
+            }
+        }
         private void ProgressUpdate_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
+            cancel = true;
         }
     }
 }

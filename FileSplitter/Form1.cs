@@ -1,19 +1,28 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Collections.Generic;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
-using Microsoft.Build.Execution;
 using System.Windows.Forms;
 using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
-using System.Xml;
-using Microsoft.Build;
 namespace FileSplitter
 {
+    //! Primary form class
+    /*! 
+    The class is the main form the user will be interacting with.
+    \n The types of global variables are string, assembly, IEnumerable, boolean, Integer32
+    \n Global Variables in order of type:
+    \n -cdir: variable containing the current directory the program is running from
+    \n -Source: stores the code from the resource Template.cs
+    \n -assembly: variable that contains information about the current executing assembly
+    \n -path: IEnumerable that will store the location in the assembly variable to the resource Template.cs
+    \n -filepaths: IEnumerable that is used to store the locations to the filemaps
+    \n -tabhidden: boolean related to the tabpage population method
+    \n -buildAutoJoiner: boolean that is used to check whether or not to create the autojoiner executable
+    \n -currentFileSelected: Integer that stores the index of the selected filemap
+    */
     public partial class Form1 : Form
     {
         //string FileName;
@@ -21,15 +30,20 @@ namespace FileSplitter
         string cdir = Directory.GetCurrentDirectory();
         System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
         IEnumerable<string> path;
-        Stream code;
         bool tabhidden = false;
         bool buildAutoJoiner = false;
         int currentFileSelected;
-        string test;
+        string Source;
         int split = 0;
         public IEnumerable<string> filepaths;
+        //! Form1
+        /*! Entry point for the Form1 class that calls the method in the Form1 Designer class to generate the form*/
         public Form1()
         {
+            //! Stream that will be used to read in the resource from the path stored in the path IEnumerable
+            Stream code;
+            //! if expression
+            /*! this expression if it evaulates to true will create the subdirectory to store the filemaps*/
             if (!Directory.Exists(cdir + @"\\maps"))
             {
                 Directory.CreateDirectory(cdir + @"\\maps");
@@ -37,9 +51,10 @@ namespace FileSplitter
             path = (from item in assembly.GetManifestResourceNames() where (item.Contains(".cs")) select item);
             code = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(path.FirstOrDefault());
             StreamReader reader = new StreamReader(code,System.Text.Encoding.UTF8);
-            test = reader.ReadToEnd();
+            Source = reader.ReadToEnd();
             path = null;
             code.Dispose();
+            GC.Collect(GC.GetGeneration(code),GCCollectionMode.Forced);
             InitializeComponent();
         }
         int totalfiles;
@@ -60,7 +75,9 @@ namespace FileSplitter
                     filebytes = File.ReadAllBytes(Path.GetFullPath(openFileDialog1.FileName));
                     files.Add(filebytes);
                 }*/
-                button2.Visible = true;
+                label2.Visible = true;
+                radioButton1.Visible = true;
+                radioButton2.Visible = true;
             }
         }
 
@@ -70,35 +87,35 @@ namespace FileSplitter
             if (convertInput(textBox1.Text) != "")
             {
                 split = Convert.ToInt32(convertInput(textBox1.Text)) != 0 ? Convert.ToInt32(convertInput(textBox1.Text)) : 1;
-                totalfiles = filebytes.Length / (filebytes.Length/split);
-            }
-            else 
-            {
-                split = 100;
-                totalfiles = filebytes.Length / (filebytes.Length/100);
-            }
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                pform = new ProgressUpdate();
-                /*SHA256 hash = SHA256.Create();
-                for (int bi = 0; bi < files.Count; bi++)
+                totalfiles = radioButton1.Checked ? filebytes.Length / (filebytes.Length / split) : filebytes.Length/split;
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                 {
-                    byte[] h = hash.ComputeHash(files.ElementAt(bi), 0, files.ElementAt(bi).Length);
-                    File.WriteAllBytes(Path.GetDirectoryName(saveFileDialog1.FileName) + @"\\Hash.sha256", h);
-                }*/
-                pform.maxvalue = totalfiles;
-                pform.Show();
-                buildAutoJoiner = checkBox1.Checked;
-                if (buildAutoJoiner) 
-                {
-                    if (!Directory.Exists(cdir + @"\\AutoJoiners\\")) 
+                    GC.Collect(GC.GetGeneration(pform), GCCollectionMode.Forced);
+                    pform = new ProgressUpdate();
+                    /*SHA256 hash = SHA256.Create();
+                    for (int bi = 0; bi < files.Count; bi++)
                     {
-                        Directory.CreateDirectory(cdir+@"\\AutoJoiners\\");
+                        byte[] h = hash.ComputeHash(files.ElementAt(bi), 0, files.ElementAt(bi).Length);
+                        File.WriteAllBytes(Path.GetDirectoryName(saveFileDialog1.FileName) + @"\\Hash.sha256", h);
+                    }*/
+                    pform.maxvalue = totalfiles;
+                    pform.Show();
+                    buildAutoJoiner = checkBox1.Checked;
+                    if (buildAutoJoiner)
+                    {
+                        if (!Directory.Exists(cdir + @"\\AutoJoiners\\"))
+                        {
+                            Directory.CreateDirectory(cdir + @"\\AutoJoiners\\");
+                        }
                     }
                 }
                 backgroundWorker1.RunWorkerAsync();
                 w.Start();
                 Hide();
+            }
+            else 
+            {
+                //textBox1.BackColor = System.Drawing.Color.Red;
             }
         }
         public string convertInput(string number)
@@ -153,7 +170,10 @@ namespace FileSplitter
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             //bool Ignore = false;
-            System.Threading.Thread worker1Thread = new System.Threading.Thread(() => { IEnumerable<string> maps = (from i in Directory.EnumerateFiles(cdir + @"\\maps\\") where (File.ReadAllLines(i).Count() > 0 | File.ReadAllLines(i).First().Equals(Path.GetDirectoryName(saveFileDialog1.FileName+@"\")+Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart + "." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last())) select i);
+            System.Threading.Thread worker1Thread = new System.Threading.Thread(() =>
+            {
+            IEnumerable<string> maps = (from i in Directory.EnumerateFiles(cdir + @"\\maps\\") where (File.ReadAllLines(i).Count() > 0 && i.Contains(Path.GetFileName(openFileDialog1.FileNames[currentphase])) == false) select i);
+            maps = (from i in maps where(File.ReadAllLines(i).First().Equals(Path.GetDirectoryName(saveFileDialog1.FileName+@"\")+Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart + "." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last()))select i);
             foreach (string item in maps) { File.Delete(item); }});
             worker1Thread.Start();
             var auto = ProjectRootElement.Create();
@@ -162,7 +182,7 @@ namespace FileSplitter
             var sl1ItemGroup = auto.CreateItemGroupElement();
             var sourceitem = auto.CreateItemGroupElement();
             byte[] filebytes = File.ReadAllBytes(openFileDialog1.FileNames[currentphase]);
-            int fileNumber = 1;
+            int fileNumber = 2;
             //List<string> contents = new List<string>();
             //if (File.Exists(Path.GetDirectoryName(saveFileDialog1.FileName) + String.Format(@"\\" + "{0}FilePartsMap.txt", Path.GetFileName(openFileDialog1.FileName))) == false) 
             //{
@@ -228,8 +248,18 @@ namespace FileSplitter
                     /*while (true)
                     {*/
                         File.AppendAllText(cdir + String.Format(@"\\maps\\" + "{0}.fmap", Path.GetFileName(openFileDialog1.FileNames[currentphase])),Path.GetDirectoryName(saveFileDialog1.FileName) + @"\" + Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart +"." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last()+Environment.NewLine);
-                        //contents.Add(Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart + "." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last());
-                        while (index < filebytes.Length)
+            //contents.Add(Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart + "." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last());
+            /*List<System.Threading.Thread> filethreads = new List<System.Threading.Thread>();
+            int threadnumber = 0;
+            int incrementby = filebytes.Length / split;
+            while (threadnumber < totalfiles) 
+            {
+                if (threadnumber == 0) 
+                {
+                    filethreads.Add(new System.Threading.Thread(() => {while(index<incrementby){ writer.BaseStream.WriteByte(filebytes[index]); }}));
+                }
+            }*/
+            while (index < filebytes.Length)
                         {
                             if ((index + 1) % (filebytes.Length/split) == 0 && index != 0)
                             {
@@ -248,7 +278,7 @@ namespace FileSplitter
                                 File.AppendAllText(cdir + String.Format(@"\\maps\\" + "{0}.fmap", Path.GetFileName(openFileDialog1.FileNames[currentphase])),BuildFilePath(Path.GetDirectoryName(saveFileDialog1.FileName)+@"\", (Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart + "." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last()).Split('.'), fileNumber)+Environment.NewLine);
                                 writer.Write(filebytes[index]);
                                 //index = index + 1 < filebytes.Length ? index + 1 : index;
-                                fileNumber = fileNumber < (filebytes.Length/split) ? fileNumber + 1 : fileNumber;
+                                fileNumber = fileNumber < totalfiles ? fileNumber + 1 : fileNumber;
                                 index++;
                                 backgroundWorker1.ReportProgress(fileNumber);
                             }
@@ -277,12 +307,12 @@ namespace FileSplitter
                                 }
                             }
                             auto.InsertAfterChild(sourceitem,auto.LastChild);
-                            test = System.Text.RegularExpressions.Regex.Replace(test, "Z", Path.GetFileName(openFileDialog1.FileNames[currentphase]));
+                            Source = System.Text.RegularExpressions.Regex.Replace(Source, "Z", Path.GetFileName(openFileDialog1.FileNames[currentphase]));
                             if (!File.Exists(cdir + @"\\Template.cs"))
                             {
                                 using (var temp = File.Create(cdir + @"\\Template.cs"))
                                 {
-                                    var sourcefile = System.Text.Encoding.UTF8.GetBytes(test);
+                                    var sourcefile = System.Text.Encoding.UTF8.GetBytes(Source);
                                     temp.Write(sourcefile,0,sourcefile.Length);
                                     temp.Flush();
                                     temp.Dispose();
@@ -329,6 +359,9 @@ namespace FileSplitter
                     //writer.BaseStream.Dispose();
                     writer.Dispose();
                     backgroundWorker1.ReportProgress(fileNumber);
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
                     //}
         }
 
@@ -342,13 +375,14 @@ namespace FileSplitter
                     break;
             }
             openFileDialog1.FileNames[currentphase] = null;
+            GC.Collect(GC.GetGeneration(openFileDialog1.FileNames[currentphase]),GCCollectionMode.Forced);
             currentphase++;
             if (currentphase < openFileDialog1.FileNames.Length)
             {
                 nextIterationStart += Path.GetFileNameWithoutExtension(saveFileDialog1.FileName);
                 byte[] filebytes = File.ReadAllBytes(openFileDialog1.FileNames[currentphase]);
                 split = Convert.ToInt32(convertInput(textBox1.Text)) != 0 ? Convert.ToInt32(convertInput(textBox1.Text)) : 1;
-                totalfiles = filebytes.Length / (filebytes.Length/split);
+                totalfiles = radioButton1.Checked ? filebytes.Length / (filebytes.Length/split):filebytes.Length/split;
                 pform.maxvalue = totalfiles;
                 backgroundWorker1.RunWorkerAsync();
             }
@@ -364,6 +398,9 @@ namespace FileSplitter
                 {
                     tabPage2.Show();
                 }
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
             }
         }
         /*private int negate(int number)
@@ -501,6 +538,34 @@ namespace FileSplitter
                     listBox1.Items.Add(i1);
                 }
             }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            GC.Collect(GC.GetGeneration(label1.Text),GCCollectionMode.Optimized);
+            label1.Text = sender.ToString().Contains("True") ? "Enter # of files to split into:":label1.Text;
+            label1.Visible = true;
+            textBox1.Visible = true;
+            button2.Visible = true;
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            GC.Collect(GC.GetGeneration(label1.Text), GCCollectionMode.Optimized);
+            label1.Text = sender.ToString().Contains("True") ? "Enter bytecount to split at:" : label1.Text;
+            label1.Visible = true;
+            textBox1.Visible = true;
+            button2.Visible = true;
         }
     }
 }
