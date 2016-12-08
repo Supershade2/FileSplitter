@@ -7,6 +7,11 @@ using System.Windows.Forms;
 using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
+/*!
+ *  \file Form1.cs
+ *  File that contains the code for the main form
+ *  This file contains the source code for the main form the user will interact with
+ */
 namespace FileSplitter
 {
     //! Primary form class
@@ -15,13 +20,8 @@ namespace FileSplitter
     \n The types of global variables are string, assembly, IEnumerable, boolean, Integer32
     \n Global Variables in order of type:
     \n -cdir: variable containing the current directory the program is running from
-    \n -Source: stores the code from the resource Template.cs
     \n -assembly: variable that contains information about the current executing assembly
-    \n -path: IEnumerable that will store the location in the assembly variable to the resource Template.cs
-    \n -filepaths: IEnumerable that is used to store the locations to the filemaps
-    \n -tabhidden: boolean related to the tabpage population method
-    \n -buildAutoJoiner: boolean that is used to check whether or not to create the autojoiner executable
-    \n -currentFileSelected: Integer that stores the index of the selected filemap
+    \n -totalfiles: Integer that will store the total number of files to create
     */
     public partial class Form1 : Form
     {
@@ -29,26 +29,35 @@ namespace FileSplitter
         //string user_selected_file;
         string cdir = Directory.GetCurrentDirectory();
         System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+        /*!*/
         IEnumerable<string> path;
+        //! boolean related to the tabpage population method
         bool tabhidden = false;
+        //! boolean that is used to check whether or not to create the autojoiner executable
         bool buildAutoJoiner = false;
+        //! Integer that stores the index of the selected filemap
         int currentFileSelected;
+        //! stores the code from the resource Template.cs
         string Source;
         int split = 0;
+        /*! IEnumerable that is used to store the paths of the filemaps */
         public IEnumerable<string> filepaths;
-        //! Form1
+        //! Form1 method
         /*! Entry point for the Form1 class that calls the method in the Form1 Designer class to generate the form*/
         public Form1()
         {
-            //! Stream that will be used to read in the resource from the path stored in the path IEnumerable
             Stream code;
-            //! if expression
+            //@{
             /*! this expression if it evaulates to true will create the subdirectory to store the filemaps*/
             if (!Directory.Exists(cdir + @"\\maps"))
             {
                 Directory.CreateDirectory(cdir + @"\\maps");
             }
+            //@}
+            //@{
+            /*! Linq Query */
             path = (from item in assembly.GetManifestResourceNames() where (item.Contains(".cs")) select item);
+			//@}
             code = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(path.FirstOrDefault());
             StreamReader reader = new StreamReader(code,System.Text.Encoding.UTF8);
             Source = reader.ReadToEnd();
@@ -62,6 +71,8 @@ namespace FileSplitter
         string nextIterationStart = "";
         ProgressUpdate pform = new ProgressUpdate();
         System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
+        //button click event @{
+        /*! opens the file explorer to pick file(s) to split up into multiple files*/
         private void button1_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -80,7 +91,8 @@ namespace FileSplitter
                 radioButton2.Visible = true;
             }
         }
-
+        //@} @{
+        /*! The event that is executed when the split files button is clicked */
         private void button2_Click(object sender, EventArgs e)
         {
             byte[] filebytes = File.ReadAllBytes(openFileDialog1.FileNames[currentphase]);
@@ -118,6 +130,7 @@ namespace FileSplitter
                 //textBox1.BackColor = System.Drawing.Color.Red;
             }
         }
+        //@}
         public string convertInput(string number)
         {
             char[] parse = number.ToCharArray();

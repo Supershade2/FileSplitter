@@ -4,9 +4,12 @@ using System.Reflection;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-
+//! Joiner
+/*! Class that the autojoiner is built from */
 class Joiner
 {
+	//@{
+	/*! The Entry point method for the class */
 	static void Main()
 	{
         string filetobuild = "Z";
@@ -31,6 +34,7 @@ class Joiner
                 filetocreate.Dispose();
             }
 		}
+		//@}
         [DllImport("kernel32.dll")]
         static extern IntPtr GetConsoleWindow();
         [DllImport("user32.dll")]
