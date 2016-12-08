@@ -127,7 +127,7 @@ namespace FileSplitter
             }
             else 
             {
-                //textBox1.BackColor = System.Drawing.Color.Red;
+                textBox1.BackColor = System.Drawing.Color.Red;
             }
         }
         //@}
@@ -555,12 +555,25 @@ namespace FileSplitter
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-
-        }
-
-        private void textBox1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-
+            bool invalidinput = false;
+            foreach (char c in textBox1.Text)
+            {
+                if (c < 48 || c > 57)
+                {
+                    invalidinput = true;
+                    GC.Collect(GC.GetGeneration(c),GCCollectionMode.Forced);
+                    break;
+                }
+            }
+            switch (invalidinput)
+            {
+                case true:
+                    textBox1.BackColor = System.Drawing.Color.Red;
+                    break;
+                default:
+                    textBox1.BackColor = System.Drawing.Color.White;
+                    break;
+            }
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
