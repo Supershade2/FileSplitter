@@ -71,7 +71,7 @@ namespace FileSplitter
         string nextIterationStart = "";
         ProgressUpdate pform = new ProgressUpdate();
         System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
-        //button click event @{
+        //@{
         /*! opens the file explorer to pick file(s) to split up into multiple files*/
         private void button1_Click(object sender, EventArgs e)
         {
@@ -91,7 +91,8 @@ namespace FileSplitter
                 radioButton2.Visible = true;
             }
         }
-        //@} @{
+        //@}
+        //@{
         /*! The event that is executed when the split files button is clicked */
         private void button2_Click(object sender, EventArgs e)
         {
@@ -180,6 +181,8 @@ namespace FileSplitter
             }
             return dir;
         }
+        //@{
+        /*! This background worker will handle the splitting of the files */
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             //bool Ignore = false;
@@ -262,49 +265,36 @@ namespace FileSplitter
                     {*/
                         File.AppendAllText(cdir + String.Format(@"\\maps\\" + "{0}.fmap", Path.GetFileName(openFileDialog1.FileNames[currentphase])),Path.GetDirectoryName(saveFileDialog1.FileName) + @"\" + Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart +"." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last()+Environment.NewLine);
             //contents.Add(Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart + "." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last());
-            /*List<System.Threading.Thread> filethreads = new List<System.Threading.Thread>();
+            List<System.Threading.Thread> filethreads = new List<System.Threading.Thread>();
             int threadnumber = 0;
             int incrementby = filebytes.Length / split;
             while (threadnumber < totalfiles) 
             {
-                if (threadnumber == 0) 
+                if (threadnumber == 0)
                 {
-                    filethreads.Add(new System.Threading.Thread(() => {while(index<incrementby){ writer.BaseStream.WriteByte(filebytes[index]); }}));
+                    filethreads.Add(new System.Threading.Thread(() => { while (index < incrementby) { writer.BaseStream.WriteByte(filebytes[index]); } }));
                 }
-            }*/
+                else
+                {
+
+                }
+            }
             while (index < filebytes.Length)
                         {
                             if ((index + 1) % (filebytes.Length/split) == 0 && index != 0)
                             {
                                 writer.BaseStream.Flush();
                                 writer.BaseStream.Dispose();
-                                /*if (File.Exists(buildFilePath(Path.GetDirectoryName(saveFileDialog1.FileName), (Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart + "." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last()).Split('.'), fileNumber)) == true)
-                                {
-                                    using (FileStream s = File.Create(buildFilePath(Path.GetDirectoryName(saveFileDialog1.FileName)+@"\", (Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart + "." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last()).Split('.'), fileNumber)))
-                                    {
-                                        s.Dispose();
-                                    }
-                                }*/
                                 stream1 = File.OpenWrite(BuildFilePath(Path.GetDirectoryName(saveFileDialog1.FileName)+@"\", (Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart + "." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last()).Split('.'), fileNumber));
                                 writer = new BinaryWriter(stream1);
-                                //contents.Add(Ignore == false ? Path.GetFileName(buildFilePath(Path.GetDirectoryName(saveFileDialog1.FileName), saveFileDialog1.FileName.Substring(Path.GetDirectoryName(saveFileDialog1.FileName).Length).Split('.'), fileNumber)) + Environment.NewLine : "");
                                 File.AppendAllText(cdir + String.Format(@"\\maps\\" + "{0}.fmap", Path.GetFileName(openFileDialog1.FileNames[currentphase])),BuildFilePath(Path.GetDirectoryName(saveFileDialog1.FileName)+@"\", (Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart + "." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last()).Split('.'), fileNumber)+Environment.NewLine);
                                 writer.Write(filebytes[index]);
-                                //index = index + 1 < filebytes.Length ? index + 1 : index;
                                 fileNumber = fileNumber < totalfiles ? fileNumber + 1 : fileNumber;
                                 index++;
                                 backgroundWorker1.ReportProgress(fileNumber);
                             }
                                 writer.BaseStream.WriteByte(filebytes[index]);
-                                //index = index < filebytes.Length ? index + 1 : index;
-                                //backgroundWorker1.ReportProgress(fileNumber/*((fileNumber < Int32.MaxValue ? fileNumber+1:fileNumber)/totalfiles)*/);
                                 index++;
-                            /*backgroundWorker1.ReportProgress(((fileNumber<Int32.MaxValue ? fileNumber + 1 : fileNumber) / totalfiles));
-                            stream1 = File.OpenWrite(buildFilePath(Path.GetDirectoryName(saveFileDialog1.FileName), saveFileDialog1.FileName.Substring(Path.GetDirectoryName(saveFileDialog1.FileName).Length).Split('.'), fileNumber));
-                            writer = new BinaryWriter(stream1);
-                            writer.Write(filebytes[index]);
-                            index = index + 1 < filebytes.Length ? index + 1 : index;
-                            fileNumber = fileNumber < Int32.MaxValue ? fileNumber + 1 : fileNumber;*/
                         }
                         if (buildAutoJoiner) 
                         {
@@ -343,41 +333,17 @@ namespace FileSplitter
                             program.ProjectCollection.UnloadAllProjects();
                             File.Delete(auto.DirectoryPath+@"\\output.csproj");
                         }
-                            //string[] files = contents.ToArray();
-                            /*using (StreamWriter wstream = File.AppendText(Path.GetDirectoryName(saveFileDialog1.FileName) + String.Format(@"\\maps\\" + "{0}.fmap", Path.GetFileName(openFileDialog1.FileName))))
-                            {
-                                for (int i = 0; i < files.Length; i++)
-                                {
-                                    byte[] bytes;
-                                    if (i != files.Length - 1)
-                                    {
-                                        bytes = GetBytes(files[i] + Environment.NewLine);
-                                        wstream.BaseStream.Write(bytes, 0, bytes.Length);
-                                    }
-                                    else
-                                    {
-                                        bytes = GetBytes(files[i]);
-                                        wstream.BaseStream.Write(bytes, 0, bytes.Length);
-                                    }
-                                }
-                                wstream.Dispose();
-                            }*/
-                            //File.AppendAllLines(Path.GetDirectoryName(saveFileDialog1.FileName) + String.Format(@"\\maps\\" + "{0}.fmap", Path.GetFileName(openFileDialog1.FileNames[currentphase])), contents);
-                            //File.AppendAllLines(Path.GetDirectoryName(saveFileDialog1.FileName) + String.Format(@"\\maps\\" + "{0}.fmap", Path.GetFileName(openFileDialog1.FileName)), contents, Encoding.ASCII);
-                            /*mapwriter.BaseStream.Flush();
-                            mapstream.Dispose();
-                            mapwriter.Dispose();*/
-                            stream1.Dispose();
-                    //writer.BaseStream.Flush();
-                    //writer.BaseStream.Dispose();
+                           
+                    stream1.Dispose();
                     writer.Dispose();
                     backgroundWorker1.ReportProgress(fileNumber);
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
                     GC.Collect();
-                    //}
         }
-
+        //@}
+        //@{
+        /*! When the worker has completed it's workload this event is called */
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             switch (w.IsRunning) 
@@ -416,6 +382,7 @@ namespace FileSplitter
                 GC.Collect();
             }
         }
+        //@}
         /*private int negate(int number)
         {
             number = number <= (0-1) ? number*-1:number;
@@ -427,6 +394,8 @@ namespace FileSplitter
             System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
             return bytes;
         }*/
+        //@{
+        /*! This Event updates the progress bar in the progress update form*/
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             w.Stop();
@@ -434,7 +403,7 @@ namespace FileSplitter
             pform.progress = e.ProgressPercentage;
             w.Restart();
         }
-
+        //@}
         /*public string ByteArrayToString(byte[] ba)
 {
    StringBuilder hex = new StringBuilder(ba.Length * 2);
@@ -442,7 +411,8 @@ namespace FileSplitter
        hex.AppendFormat("{0:x2}", b);
    return hex.ToString();
 }*/
-
+        //@{
+        /*! draw method used to paint the tab at the top of each tabpage */
         private void tabControl1_DrawItem(object sender, DrawItemEventArgs e)
         {
             TabPage page = tabControl1.TabPages[e.Index];
@@ -452,7 +422,7 @@ namespace FileSplitter
             paddedBounds.Offset(1, yOffset);
             TextRenderer.DrawText(e.Graphics, page.Text, Font, paddedBounds, System.Drawing.Color.FromArgb(64, 16, 16, 16));
         }
-
+        //@}
         private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
         {
             //byte[] hash = System.IO.File.ReadAllBytes(folderBrowserDialog1.SelectedPath+@"\Hash.sha256");

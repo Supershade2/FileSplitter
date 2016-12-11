@@ -4,6 +4,9 @@ using System.Reflection;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+/*!
+ * \file Template.cs
+ */
 //! Joiner
 /*! Class that the autojoiner is built from */
 class Joiner
@@ -12,6 +15,8 @@ class Joiner
 	/*! The Entry point method for the class */
 	static void Main()
 	{
+        //! stores the filename to recreate
+        /*! this value gets changed from Z to whatever the proper filename to recreate using Regex in Form1.cs*/
         string filetobuild = "Z";
 		var handle = GetConsoleWindow();
 		ShowWindow(handle,0);
