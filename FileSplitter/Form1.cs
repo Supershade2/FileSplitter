@@ -593,5 +593,12 @@ namespace FileSplitter
             textBox1.Visible = true;
             button2.Visible = true;
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutBox1 box = new AboutBox1();
+            box.ShowDialog(this);
+            GC.Collect(GC.GetGeneration(box),GCCollectionMode.Forced);
+        }
     }
 }

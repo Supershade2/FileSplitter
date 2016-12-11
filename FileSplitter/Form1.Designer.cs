@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.button1 = new System.Windows.Forms.Button();
@@ -46,9 +47,12 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // openFileDialog1
@@ -68,7 +72,7 @@
             this.button1.Dock = System.Windows.Forms.DockStyle.Top;
             this.button1.Location = new System.Drawing.Point(3, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(301, 43);
+            this.button1.Size = new System.Drawing.Size(299, 43);
             this.button1.TabIndex = 0;
             this.button1.Text = "Pick File(s) To Split";
             this.button1.UseVisualStyleBackColor = true;
@@ -79,7 +83,7 @@
             this.button2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.button2.Location = new System.Drawing.Point(3, 121);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(301, 43);
+            this.button2.Size = new System.Drawing.Size(299, 43);
             this.button2.TabIndex = 1;
             this.button2.Text = "Split File(s)";
             this.button2.UseVisualStyleBackColor = true;
@@ -123,7 +127,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(319, 197);
+            this.tabControl1.Size = new System.Drawing.Size(317, 197);
             this.tabControl1.TabIndex = 5;
             this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControl1_DrawItem);
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
@@ -143,7 +147,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(311, 171);
+            this.tabPage1.Size = new System.Drawing.Size(309, 171);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Split";
             // 
@@ -203,7 +207,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(311, 171);
+            this.tabPage2.Size = new System.Drawing.Size(309, 171);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Join";
             // 
@@ -212,7 +216,7 @@
             this.button4.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.button4.Location = new System.Drawing.Point(3, 141);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(301, 23);
+            this.button4.Size = new System.Drawing.Size(299, 23);
             this.button4.TabIndex = 2;
             this.button4.Text = "Join Files";
             this.button4.UseVisualStyleBackColor = true;
@@ -225,7 +229,7 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(3, 3);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(301, 161);
+            this.listBox1.Size = new System.Drawing.Size(299, 161);
             this.listBox1.TabIndex = 1;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
@@ -242,22 +246,41 @@
             this.folderBrowserDialog1.Description = "Select Path to store File";
             this.folderBrowserDialog1.SelectedPath = "%SystemDrive%:\\Users\\%USERNAME%\\Desktop";
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(106, 26);
+            this.contextMenuStrip1.Text = "About";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Text = "about";
+            this.aboutToolStripMenuItem.ToolTipText = "see some info about this program";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(319, 197);
+            this.ClientSize = new System.Drawing.Size(317, 197);
+            this.ContextMenuStrip = this.contextMenuStrip1;
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.Name = "Form1";
-            this.Text = "FileSplitterAlpha";
+            this.ShowIcon = false;
+            this.Text = "FileSplitterBeta";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -282,6 +305,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     }
 }
 
