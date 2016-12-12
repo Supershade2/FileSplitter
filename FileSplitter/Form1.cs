@@ -17,19 +17,14 @@ namespace FileSplitter
     //! Primary form class
     /*! 
     The class is the main form the user will be interacting with.
-    \n The types of global variables are string, assembly, IEnumerable, boolean, Integer32
-    \n Global Variables in order of type:
-    \n -cdir: variable containing the current directory the program is running from
-    \n -assembly: variable that contains information about the current executing assembly
-    \n -totalfiles: Integer that will store the total number of files to create
     */
     public partial class Form1 : Form
     {
-        //string FileName;
-        //string user_selected_file;
+        //! variable containing the current directory the program is running from
         string cdir = Directory.GetCurrentDirectory();
+        //! variable that contains information about the current executing assembly
         System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-        /*!*/
+        //! stores the path of Template.cs location in the currently executing assembly
         IEnumerable<string> path;
         //! boolean related to the tabpage population method
         bool tabhidden = false;
@@ -39,6 +34,7 @@ namespace FileSplitter
         int currentFileSelected;
         //! stores the code from the resource Template.cs
         string Source;
+        //! stores the value that the user specifies in the textbox field
         int split = 0;
         /*! IEnumerable that is used to store the paths of the filemaps */
         public IEnumerable<string> filepaths;
@@ -46,18 +42,13 @@ namespace FileSplitter
         /*! Entry point for the Form1 class that calls the method in the Form1 Designer class to generate the form*/
         public Form1()
         {
+            //! Generic Stream object
             Stream code;
-            //@{
-            /*! this expression if it evaulates to true will create the subdirectory to store the filemaps*/
             if (!Directory.Exists(cdir + @"\\maps"))
             {
                 Directory.CreateDirectory(cdir + @"\\maps");
             }
-            //@}
-            //@{
-            /*! Linq Query */
             path = (from item in assembly.GetManifestResourceNames() where (item.Contains(".cs")) select item);
-			//@}
             code = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(path.FirstOrDefault());
             StreamReader reader = new StreamReader(code,System.Text.Encoding.UTF8);
             Source = reader.ReadToEnd();
@@ -66,6 +57,7 @@ namespace FileSplitter
             GC.Collect(GC.GetGeneration(code),GCCollectionMode.Forced);
             InitializeComponent();
         }
+        //! Integer that will store the total number of files to create
         int totalfiles;
         int currentphase = 0;
         string nextIterationStart = "";
@@ -77,15 +69,6 @@ namespace FileSplitter
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                //FileName = openFileDialog1.FileName;
-                //string DirName = System.IO.Path.GetDirectoryName(FileName);
-                //user_selected_file = FileName.Substring(DirName.Length + 1);
-                /*foreach (string i in openFileDialog1.FileNames)
-                {
-                    byte[] filebytes;
-                    filebytes = File.ReadAllBytes(Path.GetFullPath(openFileDialog1.FileName));
-                    files.Add(filebytes);
-                }*/
                 label2.Visible = true;
                 radioButton1.Visible = true;
                 radioButton2.Visible = true;
@@ -272,11 +255,14 @@ namespace FileSplitter
             {
                 if (threadnumber == 0)
                 {
-                    filethreads.Add(new System.Threading.Thread(() => { while (index < incrementby) { writer.BaseStream.WriteByte(filebytes[index]); } }));
+                    filethreads.Add(new System.Threading.Thread(() => { while (index < incrementby) { writer.BaseStream.WriteByte(filebytes[index]); index++; } }));
+                    filethreads.Last().Name = String.Format("Thread:{0}",threadnumber);
+                    filethreads.Last().Start();
+                    threadnumber++;
                 }
                 else
                 {
-
+                    
                 }
             }
             while (index < filebytes.Length)
