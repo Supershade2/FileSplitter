@@ -20,6 +20,8 @@ namespace FileSplitter
     */
     public partial class Form1 : Form
     {
+        //! Multiplier that will multiply values entered into the textbox according to what filesize is selected in the corresponding prompt
+        int multiplier = 1;
         //! variable containing the current directory the program is running from
         string cdir = Directory.GetCurrentDirectory();
         //! variable that contains information about the current executing assembly
@@ -46,7 +48,7 @@ namespace FileSplitter
             Stream code;
             if (!Directory.Exists(cdir + @"\\maps"))
             {
-                Directory.CreateDirectory(cdir + @"\\maps");
+                Directory.CreateDirectory(cdir + @"\\maps").Attributes = FileAttributes.Directory & FileAttributes.Hidden;
             }
             path = (from item in assembly.GetManifestResourceNames() where (item.Contains(".cs")) select item);
             code = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(path.FirstOrDefault());
@@ -59,10 +61,13 @@ namespace FileSplitter
         }
         //! Integer that will store the total number of files to create
         int totalfiles;
+        //! Integer that indicates the current Phase or file the application is on
         int currentphase = 0;
+        //! string that stores what to add onto the next series of output created by the splitting of the next file
         string nextIterationStart = "";
+        //! progress form variable
         ProgressUpdate pform = new ProgressUpdate();
-        System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
+        //System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
         //@{
         /*! opens the file explorer to pick file(s) to split up into multiple files*/
         private void button1_Click(object sender, EventArgs e)
@@ -82,7 +87,7 @@ namespace FileSplitter
             byte[] filebytes = File.ReadAllBytes(openFileDialog1.FileNames[currentphase]);
             if (convertInput(textBox1.Text) != "")
             {
-                split = Convert.ToInt32(convertInput(textBox1.Text)) != 0 ? Convert.ToInt32(convertInput(textBox1.Text)) : 1;
+                split = Convert.ToInt32(convertInput(textBox1.Text)) != 0 ? Convert.ToInt32(convertInput(textBox1.Text))*multiplier : 1;
                 totalfiles = radioButton1.Checked ? filebytes.Length / (filebytes.Length / split) : filebytes.Length/split;
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                 {
@@ -95,7 +100,7 @@ namespace FileSplitter
                         File.WriteAllBytes(Path.GetDirectoryName(saveFileDialog1.FileName) + @"\\Hash.sha256", h);
                     }*/
                     pform.maxvalue = totalfiles;
-                    pform.Show();
+                    pform.ShowDialog(this);
                     buildAutoJoiner = checkBox1.Checked;
                     if (buildAutoJoiner)
                     {
@@ -106,8 +111,7 @@ namespace FileSplitter
                     }
                 }
                 backgroundWorker1.RunWorkerAsync();
-                w.Start();
-                Hide();
+                //w.Start();
             }
             else 
             {
@@ -168,7 +172,6 @@ namespace FileSplitter
         /*! This background worker will handle the splitting of the files */
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            //bool Ignore = false;
             System.Threading.Thread worker1Thread = new System.Threading.Thread(() =>
             {
             IEnumerable<string> maps = (from i in Directory.EnumerateFiles(cdir + @"\\maps\\") where (File.ReadAllLines(i).Count() > 0 && i.Contains(Path.GetFileName(openFileDialog1.FileNames[currentphase])) == false) select i);
@@ -182,9 +185,6 @@ namespace FileSplitter
             var sourceitem = auto.CreateItemGroupElement();
             byte[] filebytes = File.ReadAllBytes(openFileDialog1.FileNames[currentphase]);
             int fileNumber = 2;
-            //List<string> contents = new List<string>();
-            //if (File.Exists(Path.GetDirectoryName(saveFileDialog1.FileName) + String.Format(@"\\" + "{0}FilePartsMap.txt", Path.GetFileName(openFileDialog1.FileName))) == false) 
-            //{
             if(File.Exists(openFileDialog1.FileNames[currentphase])==true) 
             {
                 using (FileStream cstream = File.Create(cdir + String.Format(@"\\maps\\" + "{0}.fmap", Path.GetFileName(openFileDialog1.FileNames[currentphase]))))
@@ -229,29 +229,12 @@ namespace FileSplitter
             //System.IO.File.CreateText("output").Write(ByteArrayToString(filebytes));
             var stream1 = File.Open(Path.GetDirectoryName(saveFileDialog1.FileName)+@"\"+Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart +"." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last(), FileMode.Open,FileAccess.Write,FileShare.Read);
             var writer = new BinaryWriter(stream1);
-            //FileStream mapstream = File.OpenWrite(Path.GetDirectoryName(saveFileDialog1.FileName) + @"\\FilePartsMap.txt");
-            //BinaryWriter mapwriter = new BinaryWriter(mapstream);
-            //contents.AddRange(File.ReadAllLines(Path.GetDirectoryName(saveFileDialog1.FileName) + String.Format(@"\\"+"{0}FilePartsMap.txt",Path.GetFileName(openFileDialog1.FileName))));
-            /*if (contents.Count > 1) 
-            {
-                string[] files = contents.ToArray();
-                if (File.Exists(files[1]) == true && openFileDialog1.FileName == files[0]) 
-                {
-                    Ignore = true;
-                }
-            }*/
-            //contents.Clear();
-            //contents.Add(openFileDialog1.FileName);
-            //pform.maxvalue = totalfiles;
             int index = 0;
-                    /*while (true)
-                    {*/
-                        File.AppendAllText(cdir + String.Format(@"\\maps\\" + "{0}.fmap", Path.GetFileName(openFileDialog1.FileNames[currentphase])),Path.GetDirectoryName(saveFileDialog1.FileName) + @"\" + Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart +"." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last()+Environment.NewLine);
-            //contents.Add(Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart + "." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last());
+            File.AppendAllText(cdir + String.Format(@"\\maps\\" + "{0}.fmap", Path.GetFileName(openFileDialog1.FileNames[currentphase])),Path.GetDirectoryName(saveFileDialog1.FileName) + @"\" + Path.GetFileName(saveFileDialog1.FileName).Split('.').First() + nextIterationStart +"." + Path.GetFileName(saveFileDialog1.FileName).Split('.').Last()+Environment.NewLine);
             List<System.Threading.Thread> filethreads = new List<System.Threading.Thread>();
             int threadnumber = 0;
             int incrementby = filebytes.Length / split;
-            while (threadnumber < totalfiles) 
+            while (index < totalfiles) 
             {
                 if (threadnumber == 0)
                 {
@@ -259,10 +242,17 @@ namespace FileSplitter
                     filethreads.Last().Name = String.Format("Thread:{0}",threadnumber);
                     filethreads.Last().Start();
                     threadnumber++;
+                    index += incrementby;
                 }
-                else
+                else if(threadnumber != 1021)
                 {
-                    
+                    index = index + incrementby < totalfiles ? index+incrementby:index;
+                    int nextendphase = index + incrementby;
+                    while (nextendphase > totalfiles)
+                    {
+                        nextendphase--;
+                    }
+                    filethreads.Add(new System.Threading.Thread(() => { while(index<nextendphase){ } }));
                 }
             }
             while (index < filebytes.Length)
@@ -319,7 +309,6 @@ namespace FileSplitter
                             program.ProjectCollection.UnloadAllProjects();
                             File.Delete(auto.DirectoryPath+@"\\output.csproj");
                         }
-                           
                     stream1.Dispose();
                     writer.Dispose();
                     backgroundWorker1.ReportProgress(fileNumber);
@@ -332,13 +321,13 @@ namespace FileSplitter
         /*! When the worker has completed it's workload this event is called */
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            switch (w.IsRunning) 
+            /*switch (w.IsRunning) 
             { 
                 case true:
                     w.Stop();
                     w.Reset();
                     break;
-            }
+            }*/
             openFileDialog1.FileNames[currentphase] = null;
             GC.Collect(GC.GetGeneration(openFileDialog1.FileNames[currentphase]),GCCollectionMode.Forced);
             currentphase++;
@@ -346,7 +335,7 @@ namespace FileSplitter
             {
                 nextIterationStart += Path.GetFileNameWithoutExtension(saveFileDialog1.FileName);
                 byte[] filebytes = File.ReadAllBytes(openFileDialog1.FileNames[currentphase]);
-                split = Convert.ToInt32(convertInput(textBox1.Text)) != 0 ? Convert.ToInt32(convertInput(textBox1.Text)) : 1;
+                split = Convert.ToInt32(convertInput(textBox1.Text)) != 0 ? Convert.ToInt32(convertInput(textBox1.Text))*multiplier : 1;
                 totalfiles = radioButton1.Checked ? filebytes.Length / (filebytes.Length/split):filebytes.Length/split;
                 pform.maxvalue = totalfiles;
                 backgroundWorker1.RunWorkerAsync();
@@ -369,34 +358,16 @@ namespace FileSplitter
             }
         }
         //@}
-        /*private int negate(int number)
-        {
-            number = number <= (0-1) ? number*-1:number;
-            return number;
-        }*/
-        /*byte[] GetBytes(string str)
-        {
-            byte[] bytes = new byte[str.Length * sizeof(char)];
-            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-            return bytes;
-        }*/
         //@{
         /*! This Event updates the progress bar in the progress update form*/
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            w.Stop();
+            //w.Stop();
             pform.ProgressText = "Phase:" + (currentphase + 1) + " of " + openFileDialog1.FileNames.Length+Environment.NewLine+"Progress:" + (e.ProgressPercentage) + "/" + (totalfiles) + " files remaining";
             pform.progress = e.ProgressPercentage;
-            w.Restart();
+           //w.Restart();
         }
         //@}
-        /*public string ByteArrayToString(byte[] ba)
-{
-   StringBuilder hex = new StringBuilder(ba.Length * 2);
-   foreach (byte b in ba)
-       hex.AppendFormat("{0:x2}", b);
-   return hex.ToString();
-}*/
         //@{
         /*! draw method used to paint the tab at the top of each tabpage */
         private void tabControl1_DrawItem(object sender, DrawItemEventArgs e)
@@ -450,7 +421,7 @@ namespace FileSplitter
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK) 
             {
                 pform = new ProgressUpdate();
-                pform.Show();
+                pform.ShowDialog(this);
                 pform.maxvalue = (File.ReadAllLines(filepaths.ElementAt(currentFileSelected)).Length);
                 backgroundWorker2.RunWorkerAsync();
             }
@@ -472,8 +443,6 @@ namespace FileSplitter
         {
             if (!Directory.Exists(cdir + @"\\maps")) 
             {
-                var directoryInfo = Directory.CreateDirectory(cdir+@"\\maps",new DirectorySecurity(cdir+@"\\maps",AccessControlSections.All));
-                directoryInfo.Attributes = FileAttributes.Directory|FileAttributes.Hidden;
                 tabPage2.Hide();
                 tabhidden = true;
             }
@@ -545,6 +514,48 @@ namespace FileSplitter
         {
             GC.Collect(GC.GetGeneration(label1.Text), GCCollectionMode.Optimized);
             label1.Text = sender.ToString().Contains("True") ? "Enter bytecount to split at:" : label1.Text;
+            switch (radioButton2.Checked)
+            {
+                case true:
+                    ByteSizeSelection bsize = new ByteSizeSelection();
+                    bsize.ShowDialog();
+                    switch (bsize.GigaByte_Selected)
+                    {
+                        case true:
+                            multiplier = 1000000000;
+                            break;
+                        default:
+                            break;
+                    }
+                    switch (bsize.MegaByte_Selected)
+                    {
+                        case true:
+                            multiplier = 1000000;
+                            break;
+                        default:
+                            break;
+                    }
+                    switch (bsize.KiloByte_Selected)
+                    {
+                        case true:
+                            multiplier = 1000;
+                            break;
+                        default:
+                            break;
+                    }
+                    switch (bsize.None_Selected)
+                    {
+                        case true:
+                            multiplier = 1;
+                            break;
+                        default:
+                            multiplier = 1;
+                            break;
+                    }
+                    break;
+                default:
+                    break;
+            }
             label1.Visible = true;
             textBox1.Visible = true;
             button2.Visible = true;
