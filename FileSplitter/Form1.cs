@@ -238,7 +238,7 @@ namespace FileSplitter
             {
                 if (threadnumber == 0)
                 {
-                    filethreads.Add(new System.Threading.Thread(() => { while (index < incrementby) { writer.BaseStream.WriteByte(filebytes[index]); index++; } }));
+                    filethreads.Add(new System.Threading.Thread(() => { while (index < incrementby) { writer.BaseStream.WriteByte(filebytes[index]); index++; } writer.BaseStream.Flush(); }));
                     filethreads.Last().Name = String.Format("Thread:{0}",threadnumber);
                     filethreads.Last().Start();
                     threadnumber++;
@@ -246,6 +246,7 @@ namespace FileSplitter
                 }
                 else if(threadnumber != 1021)
                 {
+
                     index = index + incrementby < totalfiles ? index+incrementby:index;
                     int nextendphase = index + incrementby;
                     while (nextendphase > totalfiles)

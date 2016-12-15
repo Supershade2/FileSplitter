@@ -82,6 +82,7 @@
     <Compile Include="ByteSizeSelection.Designer.cs">
       <DependentUpon>ByteSizeSelection.cs</DependentUpon>
     </Compile>
+    <Compile Include="FileThreads.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
