@@ -1,0 +1,15 @@
+﻿<Properties StartupConfiguration="{D07B8100-FDC0-4559-8668-2EF1000F6197}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="FileSplitter Status">
+    <Files>
+      <File FileName="FileSplitter/Form1.cs" Line="624" Column="1" />
+      <File FileName="FileSplitter Status" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.FileSplitter PreferredExecutionTarget="MonoDevelop.Default" />
+  <MultiItemStartupConfigurations />
+</Properties>
